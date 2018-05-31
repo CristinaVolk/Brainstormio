@@ -19,10 +19,12 @@
     "favicon": "0.0.2",
     "jsonwebtoken": "^8.2.1",
     "jwt-decode": "^2.2.0",
+    "jwt-passport": "0.0.5",
     "mongoose": "^5.0.14",
     "nodemon": "^1.17.3",
     "nunjucks": "^3.1.3",
     "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
     "serve-favicon": "^2.5.0",
     "socket.io": "^2.1.1"
   }
