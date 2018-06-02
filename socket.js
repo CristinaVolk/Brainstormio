@@ -5,7 +5,7 @@ const databaseController = require('./controllers/databaseController');
 
 databaseController.open();
 
-const Message = databaseController.get().model('chat');
+const Room = databaseController.get().model('Room');
 
 module.exports=io=>{
   io.on('connection', function (socket) {
@@ -13,19 +13,19 @@ module.exports=io=>{
   socket.emit('connected', "You are connected! YEAH!");
   //create room
   socket.join('all');
-  // handle new messages
-  socket.on('msg',function(content){
-    console.log("MSG", content);
-    const obj={
-      date: new Date(),
-      content:content,
-      username: socket.id
-    };
-    Message.create(obj, err=>{
-      if (err) return console.error("Message", err);
-      socket.emit("message", obj);
-      socket.to('all').emit("message", obj);
-    });
-  });
+
+  socket.on('newRoom', async (req, res)=>{
+    try{
+      const room = new Room(req.body);
+      await Room.save();
+      res.sendStatus(200);
+
+      socket.emit('createRoom', req.body);
+    }
+    catch(err){
+      res.sendStatus(500);
+      console.log(err);
+    }
 });
+})
 }
