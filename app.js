@@ -14,14 +14,7 @@ var favicon = require('serve-favicon');
 
 const path = require('path');
 
-var opts = {
-  jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey : "MyS3cr3tK3Y"
-}
-passport.use(new Strategy(opts, function(jwt_payload, done){
-  if(jwt_payload!=void(0))  return done(false, jwt_payload);
-  done();
-}))
+const book = require('./routes/book');
 
 //const book = require('./routes/book');
 
@@ -40,19 +33,8 @@ app.use(bodyParser.urlencoded({'extended':'false'}));
 app.use('/assets', express.static('client/public'));
 //app.use('/books', express.static(path.join(__dirname, 'src')));
 
-function checkAuth(req, res, next){
-  passport.authenticate('jwt', { session: false }, (err, decryptToken, jwtError)=>{
-    if(jwtError!=void(0)|| err!=void(0)) return res.render('index.html', {error: err || jwtError});
-     req.user=decryptToken;
-   next();
- }) (req, res, next);
-}
-app.get('/', checkAuth, function(req, res){
-  res.render('index.html', {date: new Date()});
-});
-
 require('./socket')(io);
-
+app.use('/', book);
 
 http.listen(7777, function(){
   console.log('listening on port 7777');

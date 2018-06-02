@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt-nodejs');
-const User = require('./databaseController').get().model('User');
+
 const CONFIG = require('./config.js');
 
+//const User = require('./databaseController').get().model('User');
 
 module.exports.isAuthentic = (req,res,next) => {
 

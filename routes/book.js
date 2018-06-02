@@ -7,9 +7,10 @@ const bcrypt = require ('bcryptjs');
 const async = require('async');
 const jwt = require('jsonwebtoken');
 const CONFIG = require('./../controllers/config.js');
+const databaseController = require('./../controllers/databaseController');
 
-const UserController = require('./../controllers/userController.js');
-const User = require('./../controllers/databaseController').get().model('User');
+databaseController.open();
+const User = databaseController.get().model('User');
 
 router.get('/', async (req, res)=>{
   await res.json('Express RESTful API');
@@ -64,7 +65,7 @@ try {
 }
 });
 
-/*router.post('/register',  (req, res) => {
+router.post('/register',  (req, res) => {
 
   var name = req.body.name;
   var surname = req.body.surname;
@@ -116,7 +117,7 @@ try {
       }
     })
   }
-});*/
+});
 
 router.post('/login', (req, res)=>{
   var email = req.body.email.toLowerCase();
@@ -153,7 +154,7 @@ router.post('/login', (req, res)=>{
 
 
 
-router.get('/me', UserController.isAuthentic, function(req, res, next) {
+router.get('/me', /*UserController.isAuthentic,*/ function(req, res, next) {
   User.findById(req.userId, { password: 0 }, function (err, user) {
     if (err) return res.status(500).send("There was a problem finding the user.");
     if (!user) return res.status(404).send("No user found.");

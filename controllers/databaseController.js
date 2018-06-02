@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const userModel = require('./../models/user');
-const chatModel = require('./../models/chat');
+const roomModel = require('./../models/room');
 const CONFIG=require('./config');
 let _connection = null;
 
@@ -23,7 +23,7 @@ let open = function() {
               });
               mongoose.Promise = global.Promise;
               userModel(_connection);
-              chatModel(_connection);
+              roomModel(_connection);
 };
 
 let get = () => {
