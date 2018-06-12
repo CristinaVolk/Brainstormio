@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 const CONFIG = require('./controllers/config.js');
 const databaseController = require('./controllers/databaseController');
@@ -14,17 +13,59 @@ module.exports=io=>{
   //create room
   socket.join('all');
 
-  socket.on('newRoom', async (req, res)=>{
+  socket.on('new-Room', async (dataAboutRoom)=>{
     try{
-      const room = new Room(req.body);
+      const room = new Room(dataAboutRoom);
       await Room.save();
-      res.sendStatus(200);
-
-      socket.emit('createRoom', req.body);
+//there should be functions for "newRoom" and "createRoom" events in client/js folder, where dataAboutRoom is sent by user
+      socket.emit('create-room', dataAboutRoom);
     }
     catch(err){
-      res.sendStatus(500);
       console.log(err);
+    }
+});
+
+socket.on('add-user', async (userID, roomID)=>{
+try{
+    let user = await User.findById(userID);
+    if(!user) console.log("couldn't find the user by its ID");
+    else
+    await Room.findByIdAndUpdate(roomID,
+    {
+      $push: {
+          "user":userID
+        }
+    })
+    
+    socket.emit('user-add', userID);
+}   catch (err) {
+        console.log(err);
+    }
+});
+
+socket.on('change-room-stage', async (stageOfSession, roomID)=>{
+try{
+    await Room.findByIdAndUpdate(roomID,{
+      $addToSet:{
+        "stage":stageOfSession
+      }
+    });
+    socket.emit('change-session', "the session is changed:", stageOfSession);
+}   catch (err) {
+        console.log(err);
+    }
+});
+
+socket.on('add-new-idea', async (newIdea, roomID)=>{
+try{
+    await Room.findByIdAndUpdate(roomID,{
+      $pull:{
+        "idea":newIdea
+      }
+    });
+    socket.emit('change-session', "the session is changed:", stageOfSession);
+}   catch (err) {
+        console.log(err);
     }
 });
 })
